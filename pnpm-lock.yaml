@@ -12,6 +12,7 @@ specifiers:
   '@types/react': ^18.0.15
   '@types/react-dom': ^18.0.6
   '@vitejs/plugin-react': ^2.0.0
+  prettier: ^2.7.1
   react: ^18.2.0
   react-dom: ^18.2.0
   react-router-dom: ^6.4.3
@@ -27,7 +28,7 @@ dependencies:
   '@tauri-apps/api': registry.npmmirror.com/@tauri-apps/api/1.1.0
   react: registry.npmmirror.com/react/18.2.0
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
-  react-router-dom: registry.npmmirror.com/react-router-dom/6.4.3
+  react-router-dom: registry.npmmirror.com/react-router-dom/6.4.3_biqbaboplfbrettd7655fr4n2y
 
 devDependencies:
   '@tauri-apps/cli': registry.npmmirror.com/@tauri-apps/cli/1.1.1
@@ -35,6 +36,7 @@ devDependencies:
   '@types/react': registry.npmmirror.com/@types/react/18.0.24
   '@types/react-dom': registry.npmmirror.com/@types/react-dom/18.0.8
   '@vitejs/plugin-react': registry.npmmirror.com/@vitejs/plugin-react/2.2.0_vite@3.2.2
+  prettier: registry.npmmirror.com/prettier/2.7.1
   typescript: registry.npmmirror.com/typescript/4.8.4
   vite: registry.npmmirror.com/vite/3.2.2
 
@@ -1581,6 +1583,14 @@ packages:
       source-map-js: registry.npmmirror.com/source-map-js/1.0.2
     dev: true
 
+  registry.npmmirror.com/prettier/2.7.1:
+    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==, registry: https://packages.aliyun.com/6065355e32fceefde379c17e/npm/npm-registry/, tarball: https://registry.npmmirror.com/prettier/-/prettier-2.7.1.tgz}
+    name: prettier
+    version: 2.7.1
+    engines: {node: '>=10.13.0'}
+    hasBin: true
+    dev: true
+
   registry.npmmirror.com/prop-types/15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==, registry: https://packages.aliyun.com/6065355e32fceefde379c17e/npm/npm-registry/, tarball: https://registry.npmmirror.com/prop-types/-/prop-types-15.8.1.tgz}
     name: prop-types
@@ -1623,23 +1633,33 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  registry.npmmirror.com/react-router-dom/6.4.3:
+  registry.npmmirror.com/react-router-dom/6.4.3_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-MiaYQU8CwVCaOfJdYvt84KQNjT78VF0TJrA17SIQgNHRvLnXDJO6qsFqq8F/zzB1BWZjCFIrQpu4QxcshitziQ==, registry: https://packages.aliyun.com/6065355e32fceefde379c17e/npm/npm-registry/, tarball: https://registry.npmmirror.com/react-router-dom/-/react-router-dom-6.4.3.tgz}
+    id: registry.npmmirror.com/react-router-dom/6.4.3
     name: react-router-dom
     version: 6.4.3
     engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
     dependencies:
       '@remix-run/router': registry.npmmirror.com/@remix-run/router/1.0.3
-      react-router: registry.npmmirror.com/react-router/6.4.3
+      react: registry.npmmirror.com/react/18.2.0
+      react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
+      react-router: registry.npmmirror.com/react-router/6.4.3_react@18.2.0
     dev: false
 
-  registry.npmmirror.com/react-router/6.4.3:
+  registry.npmmirror.com/react-router/6.4.3_react@18.2.0:
     resolution: {integrity: sha512-BT6DoGn6aV1FVP5yfODMOiieakp3z46P1Fk0RNzJMACzE7C339sFuHebfvWtnB4pzBvXXkHP2vscJzWRuUjTtA==, registry: https://packages.aliyun.com/6065355e32fceefde379c17e/npm/npm-registry/, tarball: https://registry.npmmirror.com/react-router/-/react-router-6.4.3.tgz}
+    id: registry.npmmirror.com/react-router/6.4.3
     name: react-router
     version: 6.4.3
     engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=16.8'
     dependencies:
       '@remix-run/router': registry.npmmirror.com/@remix-run/router/1.0.3
+      react: registry.npmmirror.com/react/18.2.0
     dev: false
 
   registry.npmmirror.com/react-transition-group/4.4.5_biqbaboplfbrettd7655fr4n2y:
