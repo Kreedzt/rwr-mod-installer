@@ -7,11 +7,29 @@
   },
   "package": {
     "productName": "rwr-mod-installer",
-    "version": "0.0.0"
+    "version": "0.1.0-alpha1"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "dialog": {
+        "all": true
+      },
+      "path": {
+        "all": true
+      },
+      "fs": {
+        "all": true,
+        "scope": [
+          "$APP/*",
+          "$DATA/*",
+          "$CONFIG/*",
+          "$CACHE/*",
+          "$LOG/*"
+        ]
+      },
+      "shell": {
+        "open": true
+      }
     },
     "bundle": {
       "active": true,
@@ -28,7 +46,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.tauri.dev",
+      "identifier": "com.rwr.mi",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { Outlet, Link as RouterLink } from 'react-router-dom';
+import React, { FC, useEffect } from 'react';
+import {Outlet, Link as RouterLink, useLocation, useNavigate} from 'react-router-dom';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -11,12 +11,22 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop';
 import SettingsIcon from '@mui/icons-material/Settings';
+import InfoIcon from '@mui/icons-material/Info';
 
 interface HomeProps {
     //
 }
 
 const Home: FC<HomeProps> = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (location.pathname === '/') {
+            navigate('/about');
+        }
+    }, []);
+
     return (
         <Box sx={{ width: '100%' }}>
             <Grid
@@ -47,6 +57,12 @@ const Home: FC<HomeProps> = () => {
                                 <InventoryIcon fontSize="small" />
                             </ListItemIcon>
                             <ListItemText>打包</ListItemText>
+                        </ListItem>
+                        <ListItem button component={RouterLink} to="/about">
+                            <ListItemIcon>
+                                <InfoIcon fontSize="small" />
+                            </ListItemIcon>
+                            <ListItemText>关于</ListItemText>
                         </ListItem>
                     </List>
                 </Grid>
