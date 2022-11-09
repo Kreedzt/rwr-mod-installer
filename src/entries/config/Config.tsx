@@ -20,7 +20,6 @@ const Config: FC<ConfigProps> = () => {
     const onOpenConfigFile = useCallback(async () => {
         try {
             console.log('configPath:', configPath);
-            // FIXME: 无法直接打开 Windows 资源管理器, 考虑是否做平台专用处理
             await shellOpen(configPath);
         } catch (e) {
             console.log(e);
@@ -57,7 +56,7 @@ const Config: FC<ConfigProps> = () => {
         <div>
             <Box>
                 <Typography variant="h6">使用外部软件来编辑</Typography>
-                {/*<Button onClick={onOpenConfigFile}>打开配置文件</Button>*/}
+                <Button onClick={onOpenConfigFile}>打开配置文件</Button>
                 <Button onClick={onCopyConfigPath}>复制配置目录路径</Button>
             </Box>
             <Box>

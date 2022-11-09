@@ -29,7 +29,7 @@
                 ]
             },
             "shell": {
-                "open": true
+                "open": ".*"
             },
             "clipboard": {
                 "all": true,
