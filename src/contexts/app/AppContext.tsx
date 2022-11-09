@@ -19,7 +19,8 @@ import { CONFIG_FILE_NAME } from '../../constants';
 
 export const AppContext = createContext<AppContextValue>({
     refreshStore: async () => {},
-    getConfigPath: async () => ''
+    getConfigPath: async () => '',
+    updateStore: async () => {}
 });
 
 export const getDefaultConfig = (): AppConfig => {
@@ -97,6 +98,16 @@ export const AppProvider: FC<{
         return currentAppDir + CONFIG_FILE_NAME;
     }, []);
 
+    const updateStore = useCallback(async (newStore?: AppConfig) => {
+        try {
+            const mergedStore = newStore ?? getDefaultConfig();
+            await writeConfigToFile(mergedStore);
+            setConfigStore(mergedStore);
+        } catch (e) {
+            console.log(e);
+        }
+    }, [writeConfigToFile]);
+
     useEffect(() => {
         refreshStore();
     }, []);
@@ -104,10 +115,11 @@ export const AppProvider: FC<{
     const contextValue = useMemo<AppContextValue>(() => {
         return {
             configStore,
+            updateStore,
             refreshStore,
-            getConfigPath
+            getConfigPath,
         };
-    }, [configStore, refreshStore, getConfigPath]);
+    }, [configStore, refreshStore, getConfigPath, updateStore]);
 
     return (
         <AppContext.Provider value={contextValue}>

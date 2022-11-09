@@ -24,7 +24,8 @@ const Bundle: FC<BundleProps> = () => {
             });
 
             console.log('selectedPath', selectedPath);
-            const res = await invoke('bundle', {
+            // Remote Call Rust Fn
+            const res = await invoke('bundle_mod', {
                 path: selectedPath,
             });
 

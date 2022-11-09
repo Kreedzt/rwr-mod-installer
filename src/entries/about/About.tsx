@@ -45,13 +45,20 @@ const About: FC<AboutProps> = () => {
 
     return (
         <div>
-            <Typography>应用名称: {appInfo?.name}</Typography>
-            <Typography>应用版本: {appInfo?.version}</Typography>
-            <Typography>
-                源码地址:
-                <Button onClick={openUrl}>点我访问</Button>
+            <Typography variant="h6">RWR Mod 安装器</Typography>
+            <Typography variant="subtitle1">
+                应用名称: {appInfo?.name}
             </Typography>
-            <Typography>作者: {AUTHORS.join(',')}</Typography>
+            <Typography variant="subtitle1">
+                应用版本: {appInfo?.version}
+            </Typography>
+            <Typography variant="subtitle1">
+                源码地址:
+                <Button variant="text" onClick={openUrl}>点我访问</Button>
+            </Typography>
+            <Typography variant="subtitle1">
+                作者: {AUTHORS.join(',')}
+            </Typography>
         </div>
     );
 };

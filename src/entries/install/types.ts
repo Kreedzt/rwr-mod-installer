@@ -5,4 +5,6 @@ export interface ModInfo {
     version: string;
     game_version: string;
     file_log_info: string[];
+    readme_content: string;
+    changelog_content: string;
 }

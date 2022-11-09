@@ -1,83 +1,89 @@
 {
-  "build": {
-    "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:1420",
-    "distDir": "../dist"
-  },
-  "package": {
-    "productName": "rwr-mod-installer",
-    "version": "0.1.0-alpha1"
-  },
-  "tauri": {
-    "allowlist": {
-      "dialog": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      },
-      "fs": {
-        "all": true,
-        "scope": [
-          "$APP/*",
-          "$DATA/*",
-          "$CONFIG/*",
-          "$CACHE/*",
-          "$LOG/*"
+    "build": {
+        "beforeDevCommand": "pnpm dev",
+        "beforeBuildCommand": "pnpm build",
+        "devPath": "http://localhost:1420",
+        "distDir": "../dist",
+        "withGlobalTauri": true
+    },
+    "package": {
+        "productName": "rwr-mod-installer",
+        "version": "0.1.0-alpha1"
+    },
+    "tauri": {
+        "allowlist": {
+            "dialog": {
+                "all": true
+            },
+            "path": {
+                "all": true
+            },
+            "fs": {
+                "all": true,
+                "scope": [
+                    "$APP/*",
+                    "$DATA/*",
+                    "$CONFIG/*",
+                    "$CACHE/*",
+                    "$LOG/*"
+                ]
+            },
+            "shell": {
+                "open": true
+            },
+            "clipboard": {
+                "all": true,
+                "writeText": true,
+                "readText": true
+            }
+        },
+        "bundle": {
+            "active": true,
+            "category": "DeveloperTool",
+            "copyright": "",
+            "deb": {
+                "depends": []
+            },
+            "externalBin": [],
+            "icon": [
+                "icons/32x32.png",
+                "icons/128x128.png",
+                "icons/128x128@2x.png",
+                "icons/icon.icns",
+                "icons/icon.ico"
+            ],
+            "identifier": "com.rwr.mi",
+            "longDescription": "",
+            "macOS": {
+                "entitlements": null,
+                "exceptionDomain": "",
+                "frameworks": [],
+                "providerShortName": null,
+                "signingIdentity": null
+            },
+            "resources": [],
+            "shortDescription": "",
+            "targets": "all",
+            "windows": {
+                "certificateThumbprint": null,
+                "digestAlgorithm": "sha256",
+                "timestampUrl": ""
+            }
+        },
+        "security": {
+            "csp": null
+        },
+        "updater": {
+            "active": false
+        },
+        "windows": [
+            {
+                "fullscreen": false,
+                "height": 600,
+                "resizable": true,
+                "title": "RWR Mod 安装器",
+                "width": 800
+            }
         ]
-      },
-      "shell": {
-        "open": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "category": "DeveloperTool",
-      "copyright": "",
-      "deb": {
-        "depends": []
-      },
-      "externalBin": [],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "identifier": "com.rwr.mi",
-      "longDescription": "",
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": "",
-        "frameworks": [],
-        "providerShortName": null,
-        "signingIdentity": null
-      },
-      "resources": [],
-      "shortDescription": "",
-      "targets": "all",
-      "windows": {
-        "certificateThumbprint": null,
-        "digestAlgorithm": "sha256",
-        "timestampUrl": ""
-      }
-    },
-    "security": {
-      "csp": null
-    },
-    "updater": {
-      "active": false
-    },
-    "windows": [
-      {
-        "fullscreen": false,
-        "height": 600,
-        "resizable": true,
-        "title": "rwr-mod-installer",
-        "width": 800
-      }
-    ]
-  }
+    }
 }

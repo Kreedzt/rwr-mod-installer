@@ -66,7 +66,9 @@ const Home: FC<HomeProps> = () => {
                         </ListItem>
                     </List>
                 </Grid>
-                <Grid item xs={9}>
+                <Grid item xs={9} style={{
+                    overflow: 'auto'
+                }}>
                     <Outlet />
                 </Grid>
             </Grid>

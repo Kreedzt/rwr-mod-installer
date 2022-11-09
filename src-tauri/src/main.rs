@@ -45,7 +45,9 @@ struct OutputConfig {
     authors: Vec<String>,
     version: String,
     game_version: String,
-    file_log_info: Vec<String>
+    file_log_info: Vec<String>,
+    readme_content: String,
+    changelog_content: String
 }
 
 fn get_output_file_name(folder_path: &str) -> AnyhowResult<String> {
@@ -146,6 +148,8 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
     let mut archive = zip::ZipArchive::new(reader).unwrap();
     let mut installer_config_str = String::new();
     let mut file_log_info: Vec<String> = Vec::new();
+    let mut readme_content = String::new();
+    let mut changelog_content = String::new();
 
     for i in 0..archive.len() {
         let mut file = archive.by_index(i).unwrap();
@@ -209,10 +213,12 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
                     installer_config_str = config_content;
                 },
                 README_FILE => {
-                    println!("README");
+                    println!("match README");
+                    file.read_to_string(&mut readme_content);
                 },
                 CHANGELOG_FILE => {
-                    println!("CHANGELOG");
+                    println!("match CHANGELOG");
+                    file.read_to_string(&mut changelog_content);
                 },
                 _ => {
                     let info_str = format!("{}({} bytes)", outpath_name, file.size());
@@ -231,6 +237,8 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
         version: installer_config.version,
         game_version: installer_config.game_version,
         file_log_info,
+        readme_content,
+        changelog_content
     };
 
     let output_string = serde_json::to_string(&output_struct)?;
@@ -297,7 +305,7 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn bundle(path: &str) -> Result<String, String> {
+fn bundle_mod(path: &str) -> Result<String, String> {
     let output_file_name = get_output_file_name(path);
     if let Err(e) = output_file_name {
         return Err(e.to_string());
@@ -324,9 +332,7 @@ fn read_info(path: &str) -> Result<String, String> {
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet])
-        .invoke_handler(tauri::generate_handler![bundle])
-        .invoke_handler(tauri::generate_handler![read_info])
+        .invoke_handler(tauri::generate_handler![greet, bundle_mod, read_info])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

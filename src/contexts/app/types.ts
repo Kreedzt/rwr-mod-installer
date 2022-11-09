@@ -6,4 +6,5 @@ export interface AppContextValue {
     configStore?: AppConfig;
     refreshStore: () => Promise<void>;
     getConfigPath: () => Promise<string>;
+    updateStore: (next?: AppConfig) => Promise<void>;
 }
