@@ -8,7 +8,7 @@ import Box from '@mui/material/Box/Box';
 
 type Step1Props = {
     setLoading: (next: boolean) => void;
-    onNext: (modInfo: ModInfo) => void;
+    onNext: (path: string, modInfo: ModInfo) => void;
 };
 
 const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
@@ -33,13 +33,13 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
 
             const modInfo = JSON.parse(res as string) as ModInfo;
 
-            onNext(modInfo);
+            onNext(selectedPath as string, modInfo);
         } catch (e) {
             console.log(e);
         } finally {
             setLoading(false);
         }
-    }, [setLoading]);
+    }, [setLoading, onNext]);
 
     return (
         <div>

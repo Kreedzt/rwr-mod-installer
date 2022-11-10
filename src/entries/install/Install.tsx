@@ -23,6 +23,7 @@ const Install: FC<InstallProps> = () => {
     const [loading, setLoading] = useState(false);
 
     const [modInfo, setModInfo] = useState<ModInfo>();
+    const [selectedPath, setSelectedPath] = useState<string>();
 
     const handleReset = useCallback(() => {
         setActiveStep(0);
@@ -36,7 +37,8 @@ const Install: FC<InstallProps> = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }, []);
 
-    const onStep1Next = useCallback((modInfo: ModInfo) => {
+    const onStep1Next = useCallback((path: string, modInfo: ModInfo) => {
+        setSelectedPath(path);
         setModInfo(modInfo);
         setActiveStep(1);
     }, []);
@@ -48,11 +50,17 @@ const Install: FC<InstallProps> = () => {
             case 1:
                 return <Step2 displayModInfo={modInfo} />;
             case 2:
-                return <Step3 setLoading={setLoading} />;
+                return (
+                    <Step3
+                        loading={loading}
+                        filePath={selectedPath}
+                        setLoading={setLoading}
+                    />
+                );
             default:
                 return null;
         }
-    }, [activeStep, setLoading, onStep1Next, modInfo]);
+    }, [activeStep, setLoading, onStep1Next, modInfo, selectedPath, loading]);
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -103,11 +111,9 @@ const Install: FC<InstallProps> = () => {
                                 返回
                             </Button>
                             <Box sx={{ flex: '1 1 auto' }} />
-                            <Button onClick={handleNext}>
-                                {activeStep === steps.length - 1
-                                    ? '完成'
-                                    : '下一步'}
-                            </Button>
+                            {activeStep !== steps.length - 1 && (
+                                <Button onClick={handleNext}>下一步</Button>
+                            )}
                         </Box>
                     )}
                 </>

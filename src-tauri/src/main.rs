@@ -258,6 +258,9 @@ fn extract_zip(path: &str, target_path: &str) -> AnyhowResult<()> {
             None => continue,
         };
 
+        let target_path_buf = Path::new(target_path);
+        let outpath = target_path_buf.join(outpath);
+
         {
             let comment = file.comment();
             if !comment.is_empty() {
@@ -330,9 +333,18 @@ fn read_info(path: &str) -> Result<String, String> {
     }
 }
 
+#[tauri::command]
+fn install_mod(path: &str, target_path: &str) -> Result<(), String> {
+    let res = extract_zip(path, target_path);
+    match res {
+        Ok(s) => Ok(()),
+        Err(e) => Err(e.to_string())
+    }
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, bundle_mod, read_info])
+        .invoke_handler(tauri::generate_handler![greet, bundle_mod, read_info, install_mod])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
