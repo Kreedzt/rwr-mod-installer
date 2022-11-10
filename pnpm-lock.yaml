@@ -12,6 +12,7 @@ specifiers:
   '@types/react': ^18.0.15
   '@types/react-dom': ^18.0.6
   '@vitejs/plugin-react': ^2.0.0
+  markdown-to-jsx: ^7.1.7
   prettier: ^2.7.1
   react: ^18.2.0
   react-dom: ^18.2.0
@@ -26,6 +27,7 @@ dependencies:
   '@mui/icons-material': registry.npmmirror.com/@mui/icons-material/5.10.9_5n7l3nqogz2ltkpvtlyqobxizm
   '@mui/material': registry.npmmirror.com/@mui/material/5.10.12_gs4twfomdgooimayvnfrqgiwam
   '@tauri-apps/api': registry.npmmirror.com/@tauri-apps/api/1.1.0
+  markdown-to-jsx: registry.npmmirror.com/markdown-to-jsx/7.1.7
   react: registry.npmmirror.com/react/18.2.0
   react-dom: registry.npmmirror.com/react-dom/18.2.0_react@18.2.0
   react-router-dom: registry.npmmirror.com/react-router-dom/6.4.3_biqbaboplfbrettd7655fr4n2y
@@ -1505,6 +1507,13 @@ packages:
     dependencies:
       sourcemap-codec: registry.npmmirror.com/sourcemap-codec/1.4.8
     dev: true
+
+  registry.npmmirror.com/markdown-to-jsx/7.1.7:
+    resolution: {integrity: sha512-VI3TyyHlGkO8uFle0IOibzpO1c1iJDcXcS/zBrQrXQQvJ2tpdwVzVZ7XdKsyRz1NdRmre4dqQkMZzUHaKIG/1w==, registry: https://packages.aliyun.com/6065355e32fceefde379c17e/npm/npm-registry/, tarball: https://registry.npmmirror.com/markdown-to-jsx/-/markdown-to-jsx-7.1.7.tgz}
+    name: markdown-to-jsx
+    version: 7.1.7
+    engines: {node: '>= 10'}
+    dev: false
 
   registry.npmmirror.com/ms/2.1.2:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==, registry: https://packages.aliyun.com/6065355e32fceefde379c17e/npm/npm-registry/, tarball: https://registry.npmmirror.com/ms/-/ms-2.1.2.tgz}

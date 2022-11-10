@@ -8,11 +8,10 @@ import Box from '@mui/material/Box/Box';
 
 type Step1Props = {
     setLoading: (next: boolean) => void;
+    onNext: (modInfo: ModInfo) => void;
 };
 
-const Step1: FC<Step1Props> = ({ setLoading }) => {
-    const [displayModInfo, setDisplayModInfo] = useState<ModInfo>();
-
+const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
     const selectFile = useCallback(async () => {
         try {
             setLoading(true);
@@ -34,9 +33,8 @@ const Step1: FC<Step1Props> = ({ setLoading }) => {
 
             const modInfo = JSON.parse(res as string) as ModInfo;
 
-            setDisplayModInfo(modInfo);
+            onNext(modInfo);
         } catch (e) {
-            setDisplayModInfo(undefined);
             console.log(e);
         } finally {
             setLoading(false);
@@ -67,24 +65,6 @@ const Step1: FC<Step1Props> = ({ setLoading }) => {
                 </ol>
             </Box>
             <Button onClick={selectFile}>选择打包后的文件</Button>
-            {displayModInfo && (
-                <>
-                    <Typography variant="h6">已读取压缩包, 注意核对适配游戏版本</Typography>
-                    <Typography>标题: {displayModInfo.title}</Typography>
-                    <Typography>描述: {displayModInfo.description}</Typography>
-                    <Typography>版本: {displayModInfo.version}</Typography>
-                    <Typography>
-                        适配游戏版本: {displayModInfo.game_version}
-                    </Typography>
-                    <Typography>作者: {displayModInfo.authors}</Typography>
-                    <Typography variant="subtitle1">文件列表({displayModInfo.file_log_info.length} 项): </Typography>
-                    {displayModInfo.file_log_info.map((f, index) => (
-                        <Typography variant="body2" key={index}>
-                            {f}
-                        </Typography>
-                    ))}
-                </>
-            )}
         </div>
     );
 };

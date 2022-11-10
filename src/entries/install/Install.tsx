@@ -10,6 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
+import { ModInfo } from './types';
 
 interface InstallProps {
     //
@@ -20,6 +21,8 @@ const steps = ['选择 Mod 包', '提取 Mod 信息', '安装'];
 const Install: FC<InstallProps> = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
+
+    const [modInfo, setModInfo] = useState<ModInfo>();
 
     const handleReset = useCallback(() => {
         setActiveStep(0);
@@ -33,18 +36,23 @@ const Install: FC<InstallProps> = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }, []);
 
+    const onStep1Next = useCallback((modInfo: ModInfo) => {
+        setModInfo(modInfo);
+        setActiveStep(1);
+    }, []);
+
     const StepContent = useMemo(() => {
         switch (activeStep) {
             case 0:
-                return <Step1 setLoading={setLoading} />;
+                return <Step1 setLoading={setLoading} onNext={onStep1Next} />;
             case 1:
-                return <Step2 setLoading={setLoading} />;
+                return <Step2 displayModInfo={modInfo} />;
             case 2:
                 return <Step3 setLoading={setLoading} />;
             default:
                 return null;
         }
-    }, [setLoading]);
+    }, [activeStep, setLoading, onStep1Next, modInfo]);
 
     return (
         <Box sx={{ width: '100%' }}>
