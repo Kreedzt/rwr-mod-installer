@@ -3,6 +3,7 @@ import ReactMarkdown from 'markdown-to-jsx';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
+import './Markdown.less';
 
 function MarkdownListItem(props: any) {
     return (
@@ -48,5 +49,9 @@ const options = {
 };
 
 export default function Markdown(props: any) {
-    return <ReactMarkdown options={options} {...props} />;
+    return (
+        <div className="markdown">
+            <ReactMarkdown {...props} />
+        </div>
+    );
 }

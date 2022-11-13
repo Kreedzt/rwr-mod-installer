@@ -7,9 +7,12 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import Markdown from '../../components/markdown/Markdown';
 import { ModInfo } from './types';
+import { DialogContent } from '@mui/material';
 
 type Step2Props = {
     displayModInfo?: ModInfo;
+    onPrev: () => void;
+    onNext: () => void;
 };
 
 enum ModalContentMode {
@@ -17,7 +20,7 @@ enum ModalContentMode {
     MARKDOWN,
 }
 
-const Step2: FC<Step2Props> = ({ displayModInfo }) => {
+const Step2: FC<Step2Props> = ({ displayModInfo, onNext, onPrev }) => {
     const [modalOpt, setModalOpt] = useState<{
         open: boolean;
         title: string;
@@ -87,25 +90,44 @@ const Step2: FC<Step2Props> = ({ displayModInfo }) => {
                         <Button onClick={onShowReadme}>说明文件</Button>
                         <Button onClick={onShowChangelog}>版本更新文件</Button>
                     </Box>
+                    <Box>
+                        <Button
+                            variant="contained"
+                            color="warning"
+                            onClick={onPrev}
+                        >
+                            上一步
+                        </Button>
+                        <Button variant="contained" onClick={onNext}>
+                            下一步
+                        </Button>
+                    </Box>
                 </>
             ) : (
-                <Typography>尚未选择 Mod 文件, 请返回上一步</Typography>
+                <Typography>
+                    尚未选择 Mod 文件, 请
+                    <Button onClick={onPrev}>返回上一步</Button>
+                </Typography>
             )}
             <Dialog open={modalOpt.open} onClose={onClose}>
                 <DialogTitle>{modalOpt.title}</DialogTitle>
                 <Divider />
-                {modalContentMode === ModalContentMode.NODE && (
-                    <ul>
-                        {displayModInfo?.file_log_info.map((f, index) => (
-                            <Box component="li" key={index}>
-                                {f}
-                            </Box>
-                        ))}
-                    </ul>
-                )}
-                {modalContentMode === ModalContentMode.MARKDOWN && (
-                    <Markdown>{modalOpt.content}</Markdown>
-                )}
+                <DialogContent>
+                    {modalContentMode === ModalContentMode.NODE && (
+                        <ul>
+                            {displayModInfo?.file_log_info.map((f, index) => (
+                                <Box component="li" key={index}>
+                                    {f}
+                                </Box>
+                            ))}
+                        </ul>
+                    )}
+                    {modalContentMode === ModalContentMode.MARKDOWN && (
+                        <Box p={2}>
+                            <Markdown>{modalOpt.content}</Markdown>
+                        </Box>
+                    )}
+                </DialogContent>
             </Dialog>
         </>
     );

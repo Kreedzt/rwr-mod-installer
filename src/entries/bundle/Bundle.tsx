@@ -7,6 +7,10 @@ import Button from '@mui/material/Button';
 import MessageBar from '../../components/messageBar/MessageBar';
 import { useMessageBarRef } from '../../components/messageBar/hooks';
 import { ModInfo } from '../install/types';
+import Divider from '@mui/material/Divider';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 
 interface BundleProps {
     //
@@ -61,57 +65,96 @@ const Bundle: FC<BundleProps> = () => {
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Typography variant="h5">
-                将文件包打包成可供安装的 zip 文件
-            </Typography>
-
             <Box p={2}>
-                <Typography variant="subtitle2">
-                    结构说明(以下结构缺一不可):
-                </Typography>
-                <Typography component="ul" variant="body2">
-                    <Box component="li">media/(Mod 资源包, 作为文件夹存在)</Box>
-                    <Box component="li">README.md(使用说明文件)</Box>
-                    <Box component="li">CHANGELOG.md(改动说明文件)</Box>
-                    <Box component="li">config.json(配置文件)</Box>
+                <Typography variant="h5">
+                    将 Mod 包打包成可供安装的 zip 文件
                 </Typography>
             </Box>
 
-            <Box p={2}>
-                <Typography variant="subtitle2">
-                    config.json 格式说明(以下结构缺一不可):
-                </Typography>
-                <Typography component="ul" variant="body2">
-                    <Box component="li">title: Mod 标题</Box>
-                    <Box component="li">description: Mod 描述</Box>
-                    <Box component="li">authors: Mod 作者列表</Box>
-                    <Box component="li">version: Mod 版本</Box>
-                    <Box component="li">game_version: 适配的游戏版本</Box>
-                </Typography>
+            <Divider />
 
-                <Typography variant="subtitle2">JSON 结构示例:</Typography>
-                <Typography variant="body2">
-                    {JSON.stringify(CONFIG_EXAMPLE, null, 2)}
-                </Typography>
+            <Box p={2}>
+                <Button variant="contained" onClick={selectFolder}>点我选择文件夹打包</Button>
             </Box>
 
             <Box p={2}>
-                <Typography variant="subtitle2">工作原理:</Typography>
-                <Typography component="ol" variant="body2">
-                    <Box component="li">解压文件，识别结构</Box>
-                    <Box component="li">
-                        读取 config.json 内包信息(版本, 名称等)
-                    </Box>
-                    <Box component="li">读取 README.md 作为说明文件</Box>
-                    <Box component="li">读取 CHANGELOG.md 作为改动说明文件</Box>
-                    <Box component="li">
-                        用户点击安装，开始复制 media
-                        文件夹到游戏指定目录中作为替换
-                    </Box>
-                </Typography>
+                <Card>
+                    <CardHeader title="结构说明(以下结构缺一不可)" />
+                    <CardContent>
+                        <Typography component="ul" variant="body2">
+                            <Box component="li">
+                                media/(Mod 资源包, 作为文件夹存在)
+                            </Box>
+                            <Box component="li">README.md(使用说明文件)</Box>
+                            <Box component="li">CHANGELOG.md(改动说明文件)</Box>
+                            <Box component="li">config.json(配置文件)</Box>
+                        </Typography>
+                    </CardContent>
+                </Card>
             </Box>
 
-            <Button onClick={selectFolder}>点我选择文件夹打包</Button>
+            <Box p={2}>
+                <Card>
+                    <CardHeader title="额外说明" />
+                    <CardContent>
+                        <Box mb={2}>
+                            <Typography variant="subtitle2">
+                                config.json 格式说明(以下结构缺一不可):
+                            </Typography>
+                            <Typography component="ul" variant="body2">
+                                <Box component="li">title: Mod 标题</Box>
+                                <Box component="li">description: Mod 描述</Box>
+                                <Box component="li">authors: Mod 作者列表</Box>
+                                <Box component="li">version: Mod 版本</Box>
+                                <Box component="li">
+                                    game_version: 适配的游戏版本
+                                </Box>
+                            </Typography>
+
+                            <Typography variant="subtitle2">
+                                JSON 结构示例:
+                            </Typography>
+                            <Typography variant="body2">
+                                {JSON.stringify(CONFIG_EXAMPLE, null, 2)}
+                            </Typography>
+                        </Box>
+
+                        <Divider />
+
+                        <Box mt={2}>
+                            <Typography variant="subtitle2">
+                                .md 后缀的文件为 Markdown 语法文件,
+                                可以编写一定格式的文本
+                            </Typography>
+                        </Box>
+                    </CardContent>
+                </Card>
+            </Box>
+
+            <Box p={2}>
+                <Card>
+                    <CardHeader title="工作原理" />
+                    <CardContent>
+                        <Typography component="ol" variant="body2">
+                            <Box component="li">解压文件，识别结构</Box>
+                            <Box component="li">
+                                读取 config.json 内包信息(版本, 名称等)
+                            </Box>
+                            <Box component="li">
+                                读取 README.md 作为说明文件
+                            </Box>
+                            <Box component="li">
+                                读取 CHANGELOG.md 作为改动说明文件
+                            </Box>
+                            <Box component="li">
+                                用户点击安装，开始复制 media
+                                文件夹到游戏指定目录中作为替换
+                            </Box>
+                        </Typography>
+                    </CardContent>
+                </Card>
+            </Box>
+
             <MessageBar ref={msgBarRef} />
         </Box>
     );

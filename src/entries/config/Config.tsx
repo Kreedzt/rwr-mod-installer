@@ -4,7 +4,10 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Input from '@mui/material/Input';
+import Paper from '@mui/material/Paper';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
 import { open as shellOpen } from '@tauri-apps/api/shell';
 import { open as dialogOpen } from '@tauri-apps/api/dialog';
 import { writeText } from '@tauri-apps/api/clipboard';
@@ -53,41 +56,56 @@ const Config: FC<ConfigProps> = () => {
     }, [appContext.updateStore]);
 
     return (
-        <div>
-            <Box>
-                <Typography variant="h6">使用外部软件来编辑</Typography>
-                <Button onClick={onOpenConfigFile}>打开配置文件</Button>
-                <Button onClick={onCopyConfigPath}>复制配置目录路径</Button>
-            </Box>
-            <Box>
-                <Typography variant="h6">设置区域</Typography>
-                <Grid
-                    container
-                    rowSpacing={1}
-                    columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-                >
-                    <Grid item xs={12}>
-                        <Button
-                            variant="outlined"
-                            onClick={onSelectTargetFolder}
-                        >
-                            点我设置目标目录(通常用 RWR 游戏目录, 即:
-                            RunningWithRifles 文件夹)
+        <Box p={2}>
+            <Box p={2}>
+                <Card>
+                    <CardHeader title="使用外部软件来编辑" />
+                    <CardContent>
+                        <Button onClick={onOpenConfigFile}>打开配置文件</Button>
+                        <Button onClick={onCopyConfigPath}>
+                            复制配置目录路径
                         </Button>
-                        <Typography variant="body2">
-                            {appContext.configStore?.target_path_folder ? (
-                                <>
-                                    目标目录已设置为:{' '}
-                                    {appContext.configStore.target_path_folder}
-                                </>
-                            ) : (
-                                '尚未进行设置'
-                            )}
-                        </Typography>
-                    </Grid>
-                </Grid>
+                    </CardContent>
+                </Card>
             </Box>
-        </div>
+
+            <Box p={2}>
+                <Card>
+                    <CardHeader title="设置区域" />
+                    <CardContent>
+                        <Grid
+                            container
+                            rowSpacing={1}
+                            columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+                        >
+                            <Grid item xs={12}>
+                                <Button
+                                    variant="outlined"
+                                    onClick={onSelectTargetFolder}
+                                >
+                                    点我设置目标目录(通常用 RWR 游戏目录, 即:
+                                    RunningWithRifles 文件夹)
+                                </Button>
+                                <Typography variant="body2">
+                                    {appContext.configStore
+                                        ?.target_path_folder ? (
+                                        <>
+                                            目标目录已设置为:{' '}
+                                            {
+                                                appContext.configStore
+                                                    .target_path_folder
+                                            }
+                                        </>
+                                    ) : (
+                                        '尚未进行设置'
+                                    )}
+                                </Typography>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+            </Box>
+        </Box>
     );
 };
 

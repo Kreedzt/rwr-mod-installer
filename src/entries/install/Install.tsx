@@ -11,6 +11,7 @@ import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
 import { ModInfo } from './types';
+import Divider from '@mui/material/Divider';
 
 interface InstallProps {
     //
@@ -48,53 +49,57 @@ const Install: FC<InstallProps> = () => {
             case 0:
                 return <Step1 setLoading={setLoading} onNext={onStep1Next} />;
             case 1:
-                return <Step2 displayModInfo={modInfo} />;
+                return (
+                    <Step2
+                        displayModInfo={modInfo}
+                        onNext={handleNext}
+                        onPrev={handleBack}
+                    />
+                );
             case 2:
                 return (
                     <Step3
                         loading={loading}
                         filePath={selectedPath}
                         setLoading={setLoading}
+                        onReset={handleReset}
                     />
                 );
             default:
                 return null;
         }
-    }, [activeStep, setLoading, onStep1Next, modInfo, selectedPath, loading]);
+    }, [
+        activeStep,
+        setLoading,
+        onStep1Next,
+        modInfo,
+        selectedPath,
+        loading,
+        handleNext,
+        handleBack,
+        handleReset,
+    ]);
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Stepper activeStep={activeStep}>
-                {steps.map((label, index) => (
-                    <Step key={label}>
-                        <StepLabel>{label}</StepLabel>
-                    </Step>
-                ))}
-            </Stepper>
-            {activeStep === steps.length ? (
-                <>
-                    <Typography sx={{ mt: 2, mb: 1 }}>
-                        All steps completed - you&apos;re finished
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-                        <Box sx={{ flex: '1 1 auto' }} />
-                        <Button onClick={handleReset}>Reset</Button>
-                    </Box>
-                </>
-            ) : (
-                <>
-                    {StepContent}
-                    {loading ? (
-                        <Fade
-                            in
-                            style={{
-                                transitionDelay: 'progress',
-                            }}
-                            unmountOnExit
-                        >
-                            <CircularProgress />
-                        </Fade>
-                    ) : (
+            <Box p={2}>
+                <Stepper activeStep={activeStep}>
+                    {steps.map((label, index) => (
+                        <Step key={label}>
+                            <StepLabel>{label}</StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
+            </Box>
+
+            <Divider />
+
+            <Box p={2}>
+                {activeStep === steps.length ? (
+                    <>
+                        <Typography sx={{ mt: 2, mb: 1 }}>
+                            All steps completed - you&apos;re finished
+                        </Typography>
                         <Box
                             sx={{
                                 display: 'flex',
@@ -102,22 +107,27 @@ const Install: FC<InstallProps> = () => {
                                 pt: 2,
                             }}
                         >
-                            <Button
-                                color="inherit"
-                                disabled={activeStep === 0}
-                                onClick={handleBack}
-                                sx={{ mr: 1 }}
-                            >
-                                返回
-                            </Button>
                             <Box sx={{ flex: '1 1 auto' }} />
-                            {activeStep !== steps.length - 1 && (
-                                <Button onClick={handleNext}>下一步</Button>
-                            )}
+                            <Button onClick={handleReset}>Reset</Button>
                         </Box>
-                    )}
-                </>
-            )}
+                    </>
+                ) : (
+                    <>
+                        {StepContent}
+                        {loading && (
+                            <Fade
+                                in
+                                style={{
+                                    transitionDelay: 'progress',
+                                }}
+                                unmountOnExit
+                            >
+                                <CircularProgress />
+                            </Fade>
+                        )}
+                    </>
+                )}
+            </Box>
         </Box>
     );
 };

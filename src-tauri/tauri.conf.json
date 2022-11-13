@@ -79,10 +79,10 @@
         "windows": [
             {
                 "fullscreen": false,
-                "height": 600,
+                "height": 768,
                 "resizable": true,
                 "title": "RWR Mod 安装器",
-                "width": 800
+                "width": 1024
             }
         ]
     }

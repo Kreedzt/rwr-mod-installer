@@ -18,6 +18,7 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 import InstallDesktopIcon from '@mui/icons-material/InstallDesktop';
 import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
+import './Home.less';
 
 interface HomeProps {
     //
@@ -36,8 +37,9 @@ const Home: FC<HomeProps> = () => {
     const pathName = location.pathname;
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box className="home-container" sx={{ width: '100%' }}>
             <Grid
+                className="home-inner"
                 container
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
