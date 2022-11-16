@@ -16,10 +16,7 @@ interface BundleProps {
     //
 }
 
-const CONFIG_EXAMPLE: Pick<
-    ModInfo,
-    'title' | 'description' | 'authors' | 'version' | 'game_version'
-> = {
+const CONFIG_EXAMPLE: ModInfo = {
     title: 'Mod 标题',
     description: 'Mod 描述',
     authors: ['Annoymous'],
@@ -74,7 +71,9 @@ const Bundle: FC<BundleProps> = () => {
             <Divider />
 
             <Box p={2}>
-                <Button variant="contained" onClick={selectFolder}>点我选择文件夹打包</Button>
+                <Button variant="contained" onClick={selectFolder}>
+                    点我选择文件夹打包
+                </Button>
             </Box>
 
             <Box p={2}>

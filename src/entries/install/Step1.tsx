@@ -3,12 +3,12 @@ import { open } from '@tauri-apps/api/dialog';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { invoke } from '@tauri-apps/api';
-import { ModInfo } from './types';
+import { ModReadInfo } from './types';
 import Box from '@mui/material/Box/Box';
 
 type Step1Props = {
     setLoading: (next: boolean) => void;
-    onNext: (path: string, modInfo: ModInfo) => void;
+    onNext: (path: string, modInfo: ModReadInfo) => void;
 };
 
 const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
@@ -29,9 +29,10 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
             const res = await invoke('read_info', {
                 path: selectedPath,
             });
-            console.log('res', res);
 
-            const modInfo = JSON.parse(res as string) as ModInfo;
+            const modInfo = JSON.parse(res as string) as ModReadInfo;
+
+            console.log('modInfo', modInfo);
 
             onNext(selectedPath as string, modInfo);
         } catch (e) {

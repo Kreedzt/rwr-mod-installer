@@ -46,6 +46,7 @@ struct OutputConfig {
     version: String,
     game_version: String,
     file_log_info: Vec<String>,
+    file_path_list: Vec<String>,
     readme_content: String,
     changelog_content: String
 }
@@ -148,6 +149,8 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
     let mut archive = zip::ZipArchive::new(reader).unwrap();
     let mut installer_config_str = String::new();
     let mut file_log_info: Vec<String> = Vec::new();
+    let mut file_path_list: Vec<String> = Vec::new();
+
     let mut readme_content = String::new();
     let mut changelog_content = String::new();
 
@@ -222,6 +225,7 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
                 },
                 _ => {
                     let info_str = format!("{}({} bytes)", outpath_name, file.size());
+                    file_path_list.push(outpath_name);
                     file_log_info.push(info_str);
                 }
             }
@@ -237,6 +241,7 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
         version: installer_config.version,
         game_version: installer_config.game_version,
         file_log_info,
+        file_path_list,
         readme_content,
         changelog_content
     };

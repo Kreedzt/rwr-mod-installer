@@ -10,7 +10,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Step1 from './Step1';
 import Step2 from './Step2';
 import Step3 from './Step3';
-import { ModInfo } from './types';
+import { ModReadInfo } from './types';
 import Divider from '@mui/material/Divider';
 
 interface InstallProps {
@@ -23,7 +23,7 @@ const Install: FC<InstallProps> = () => {
     const [activeStep, setActiveStep] = useState(0);
     const [loading, setLoading] = useState(false);
 
-    const [modInfo, setModInfo] = useState<ModInfo>();
+    const [modInfo, setModInfo] = useState<ModReadInfo>();
     const [selectedPath, setSelectedPath] = useState<string>();
 
     const handleReset = useCallback(() => {
@@ -38,7 +38,7 @@ const Install: FC<InstallProps> = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     }, []);
 
-    const onStep1Next = useCallback((path: string, modInfo: ModInfo) => {
+    const onStep1Next = useCallback((path: string, modInfo: ModReadInfo) => {
         setSelectedPath(path);
         setModInfo(modInfo);
         setActiveStep(1);

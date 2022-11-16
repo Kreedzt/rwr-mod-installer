@@ -6,11 +6,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import Markdown from '../../components/markdown/Markdown';
-import { ModInfo } from './types';
+import { ModReadInfo } from './types';
 import { DialogContent } from '@mui/material';
 
 type Step2Props = {
-    displayModInfo?: ModInfo;
+    displayModInfo?: ModReadInfo;
     onPrev: () => void;
     onNext: () => void;
 };
