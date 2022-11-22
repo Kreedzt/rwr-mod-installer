@@ -11,6 +11,7 @@ import Divider from '@mui/material/Divider';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+import './Bundle.less';
 
 interface BundleProps {
     //
@@ -61,7 +62,7 @@ const Bundle: FC<BundleProps> = () => {
     }, [setLoading]);
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box className="bundle-container">
             <Box p={2}>
                 <Typography variant="h5">
                     将 Mod 包打包成可供安装的 zip 文件
@@ -70,13 +71,13 @@ const Bundle: FC<BundleProps> = () => {
 
             <Divider />
 
-            <Box p={2}>
+            <Box mt={2} mb={2}>
                 <Button variant="contained" onClick={selectFolder}>
                     点我选择文件夹打包
                 </Button>
             </Box>
 
-            <Box p={2}>
+            <Box mt={2} mb={2} mr={2}>
                 <Card>
                     <CardHeader title="结构说明(以下结构缺一不可)" />
                     <CardContent>
@@ -92,7 +93,7 @@ const Bundle: FC<BundleProps> = () => {
                 </Card>
             </Box>
 
-            <Box p={2}>
+            <Box mt={2} mb={2} mr={2}>
                 <Card>
                     <CardHeader title="额外说明" />
                     <CardContent>
@@ -114,7 +115,15 @@ const Bundle: FC<BundleProps> = () => {
                                 JSON 结构示例:
                             </Typography>
                             <Typography variant="body2">
-                                {JSON.stringify(CONFIG_EXAMPLE, null, 2)}
+                                <code>
+                                    <pre>
+                                        {JSON.stringify(
+                                            CONFIG_EXAMPLE,
+                                            null,
+                                            2,
+                                        )}
+                                    </pre>
+                                </code>
                             </Typography>
                         </Box>
 
@@ -130,7 +139,7 @@ const Bundle: FC<BundleProps> = () => {
                 </Card>
             </Box>
 
-            <Box p={2}>
+            <Box mt={2} mb={2} mr={2}>
                 <Card>
                     <CardHeader title="工作原理" />
                     <CardContent>

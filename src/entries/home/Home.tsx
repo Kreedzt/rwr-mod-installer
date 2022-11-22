@@ -44,7 +44,7 @@ const Home: FC<HomeProps> = () => {
                 rowSpacing={1}
                 columnSpacing={{ xs: 1, sm: 2, md: 3 }}
             >
-                <Grid item xs={3}>
+                <Grid item xs={3} className="home-nav">
                     <List
                         subheader={
                             <ListSubheader component="div">菜单</ListSubheader>
@@ -95,9 +95,7 @@ const Home: FC<HomeProps> = () => {
                 <Grid
                     item
                     xs={9}
-                    style={{
-                        overflow: 'auto',
-                    }}
+                    className="home-content"
                 >
                     <Outlet />
                 </Grid>

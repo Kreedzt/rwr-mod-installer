@@ -53,6 +53,12 @@ const Step3: FC<Step3Props> = ({ filePath, setLoading, loading, onReset }) => {
             <Typography variant="h6">已读取文件路径</Typography>
             <Typography variant="subtitle2">{filePath}</Typography>
             <Box p={1}>
+                <Button variant="contained">备份</Button>
+            </Box>
+            <Box p={1}>
+                <Button variant="contained">还原</Button>
+            </Box>
+            <Box p={1}>
                 <Button
                     variant="contained"
                     style={{
