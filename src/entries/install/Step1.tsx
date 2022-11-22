@@ -65,7 +65,9 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
                     </li>
                 </ol>
             </Box>
-            <Button onClick={selectFile}>选择打包后的文件</Button>
+            <Button variant="contained" onClick={selectFile}>
+                选择打包后的文件
+            </Button>
         </div>
     );
 };

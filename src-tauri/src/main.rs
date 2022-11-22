@@ -3,16 +3,16 @@
     windows_subsystem = "windows"
 )]
 
-use std::{io::prelude::*, error::Error};
+use anyhow::{anyhow, Ok as AnyhowOk, Result as AnyhowResult};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
 use std::path::Path;
-use zip::write::FileOptions;
-use anyhow::{Result as AnyhowResult, Ok as AnyhowOk, anyhow};
+use std::{error::Error, io::prelude::*};
 use walkdir::{DirEntry, WalkDir};
-use serde::{Deserialize, Serialize};
+use zip::write::FileOptions;
 
 // static COMPRESS_FILE: &'static str = "compressed.zip";
 
@@ -34,7 +34,7 @@ struct ModInstallerConfig {
     description: String,
     authors: Vec<String>,
     version: String,
-    game_version: String
+    game_version: String,
 }
 
 // for read info to webview
@@ -48,7 +48,7 @@ struct OutputConfig {
     file_log_info: Vec<String>,
     file_path_list: Vec<String>,
     readme_content: String,
-    changelog_content: String
+    changelog_content: String,
 }
 
 fn get_output_file_name(folder_path: &str) -> AnyhowResult<String> {
@@ -59,11 +59,12 @@ fn get_output_file_name(folder_path: &str) -> AnyhowResult<String> {
     let file_content = fs::read_to_string(target_file_path)?;
 
     let config = serde_json::from_str::<ModInstallerConfig>(&file_content)
-        .map_err(|e| {
-            anyhow!("Get mod config file error: {}", e)
-        })?;
+        .map_err(|e| anyhow!("Get mod config file error: {}", e))?;
 
-    let output_file_name = format!("[RWRMI][{}]{} v{}.zip", config.game_version, config.title, config.version);
+    let output_file_name = format!(
+        "[RWRMI][{}]{} v{}.zip",
+        config.game_version, config.title, config.version
+    );
 
     Ok(output_file_name)
 }
@@ -179,7 +180,6 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
             //     outpath.display()
             // );
         } else {
-
             let outpath_name = outpath.display().to_string();
 
             // read config file
@@ -189,13 +189,10 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
                 // println!("Config file content: {}", config_content);
 
                 // installer_config_str = config_content;
-
             } else if outpath_name == README_FILE {
                 // println!("README");
-
             } else if outpath_name == CHANGELOG_FILE {
                 // println!("CHANGELOG");
-
             } else {
                 // println!("other");
             }
@@ -214,15 +211,15 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
                     println!("Config file content: {}", config_content);
 
                     installer_config_str = config_content;
-                },
+                }
                 README_FILE => {
                     println!("match README");
                     file.read_to_string(&mut readme_content);
-                },
+                }
                 CHANGELOG_FILE => {
                     println!("match CHANGELOG");
                     file.read_to_string(&mut changelog_content);
-                },
+                }
                 _ => {
                     let info_str = format!("{}({} bytes)", outpath_name, file.size());
                     file_path_list.push(outpath_name);
@@ -243,7 +240,7 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
         file_log_info,
         file_path_list,
         readme_content,
-        changelog_content
+        changelog_content,
     };
 
     let output_string = serde_json::to_string(&output_struct)?;
@@ -306,12 +303,6 @@ fn extract_zip(path: &str, target_path: &str) -> AnyhowResult<()> {
     AnyhowOk(())
 }
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[tauri::command]
 fn bundle_mod(path: &str) -> Result<String, String> {
     let output_file_name = get_output_file_name(path);
@@ -324,7 +315,7 @@ fn bundle_mod(path: &str) -> Result<String, String> {
     let res = write_zip(path, &output_file_name);
     match res {
         Ok(_) => Ok(output_file_name),
-        Err(e) => Err(e.to_string())
+        Err(e) => Err(e.to_string()),
     }
 }
 
@@ -334,8 +325,20 @@ fn read_info(path: &str) -> Result<String, String> {
     let res = read_zip(path);
     match res {
         Ok(s) => Ok(s),
-        Err(e) => Err(e.to_string())
+        Err(e) => Err(e.to_string()),
     }
+}
+
+#[tauri::command]
+fn make_backup(path: &str, file_list: Vec<String>) -> Result<String, String> {
+    let res = String::new();
+    Ok(res)
+}
+
+#[tauri::command]
+fn recover_backup() -> Result<String, String> {
+    let res = String::new();
+    Ok(res)
 }
 
 #[tauri::command]
@@ -343,13 +346,19 @@ fn install_mod(path: &str, target_path: &str) -> Result<(), String> {
     let res = extract_zip(path, target_path);
     match res {
         Ok(s) => Ok(()),
-        Err(e) => Err(e.to_string())
+        Err(e) => Err(e.to_string()),
     }
 }
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, bundle_mod, read_info, install_mod])
+        .invoke_handler(tauri::generate_handler![
+            bundle_mod,
+            read_info,
+            install_mod,
+            make_backup,
+            recover_backup
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

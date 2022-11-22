@@ -61,6 +61,7 @@ const Install: FC<InstallProps> = () => {
                     <Step3
                         loading={loading}
                         filePath={selectedPath}
+                        modInfo={modInfo}
                         setLoading={setLoading}
                         onReset={handleReset}
                     />
