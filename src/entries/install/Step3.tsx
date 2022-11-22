@@ -6,6 +6,7 @@ import { useAppContext } from '../../contexts/app/hooks';
 import { invoke } from '@tauri-apps/api';
 import MessageBar from '../../components/messageBar/MessageBar';
 import { useMessageBarRef } from '../../components/messageBar/hooks';
+import './Step3.less';
 
 type Step3Props = {
     loading: boolean;
@@ -49,21 +50,23 @@ const Step3: FC<Step3Props> = ({ filePath, setLoading, loading, onReset }) => {
     }
 
     return (
-        <div>
+        <div className="step3-container">
             <Typography variant="h6">已读取文件路径</Typography>
             <Typography variant="subtitle2">{filePath}</Typography>
             <Box p={1}>
-                <Button variant="contained">备份</Button>
+                <Button color="success" className="full-width-button" variant="contained">
+                    备份
+                </Button>
             </Box>
             <Box p={1}>
-                <Button variant="contained">还原</Button>
+                <Button color="warning" className="full-width-button" variant="contained">
+                    还原
+                </Button>
             </Box>
             <Box p={1}>
                 <Button
+                    className="full-width-button"
                     variant="contained"
-                    style={{
-                        width: '100%',
-                    }}
                     onClick={onInstall}
                     disabled={loading}
                 >
@@ -73,11 +76,9 @@ const Step3: FC<Step3Props> = ({ filePath, setLoading, loading, onReset }) => {
 
             <Box p={1}>
                 <Button
+                    className="full-width-button"
                     onClick={onReset}
                     variant="contained"
-                    style={{
-                        width: '100%',
-                    }}
                     color="error"
                 >
                     重置
