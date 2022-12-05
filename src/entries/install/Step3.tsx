@@ -52,10 +52,18 @@ const Step3: FC<Step3Props> = ({
     const onBackup = useCallback(async () => {
         try {
             setLoading(true);
-            await invoke('make_backup', {
-                path: filePath,
+            console.log('make_backup params', {
+                // mod file path
+                modPath: filePath,
+                targetPath: appContext.configStore?.target_path_folder,
                 fileList: modInfo?.file_path_list ?? [],
             });
+            const resPath = await invoke('make_backup', {
+                modPath: filePath,
+                fileList: modInfo?.file_path_list ?? [],
+                targetPath: appContext.configStore?.target_path_folder,
+            });
+            console.log('resPath', resPath);
             messageBarRef.current?.show({
                 type: 'success',
                 msg: '备份成功',
