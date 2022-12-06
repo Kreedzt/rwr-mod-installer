@@ -8,6 +8,7 @@ import MessageBar from '../../components/messageBar/MessageBar';
 import { useMessageBarRef } from '../../components/messageBar/hooks';
 import './Step3.less';
 import { ModReadInfo } from './types';
+import Divider from '@mui/material/Divider';
 
 type Step3Props = {
     loading: boolean;
@@ -83,7 +84,7 @@ const Step3: FC<Step3Props> = ({
         try {
             setLoading(true);
             await invoke('recover_backup', {
-                path: appContext.configStore?.target_path_folder
+                path: appContext.configStore?.target_path_folder,
             });
             messageBarRef.current?.show({
                 type: 'success',
@@ -114,26 +115,6 @@ const Step3: FC<Step3Props> = ({
             <Typography variant="subtitle2">{filePath}</Typography>
             <Box p={1}>
                 <Button
-                    color="success"
-                    className="full-width-button"
-                    variant="contained"
-                    onClick={onBackup}
-                >
-                    备份
-                </Button>
-            </Box>
-            <Box p={1}>
-                <Button
-                    color="warning"
-                    className="full-width-button"
-                    variant="contained"
-                    onClick={onRecover}
-                >
-                    还原
-                </Button>
-            </Box>
-            <Box p={1}>
-                <Button
                     className="full-width-button"
                     variant="contained"
                     onClick={onInstall}
@@ -153,6 +134,30 @@ const Step3: FC<Step3Props> = ({
                     重置
                 </Button>
             </Box>
+            <Divider />
+            <Box p={1}>
+                <Button
+                    color="success"
+                    className="full-width-button"
+                    variant="contained"
+                    onClick={onBackup}
+                >
+                    备份
+                </Button>
+            </Box>
+            <Box p={1}>
+                <Button
+                    color="warning"
+                    className="full-width-button"
+                    variant="contained"
+                    onClick={onRecover}
+                >
+                    还原
+                </Button>
+            </Box>
+            <Typography variant="subtitle2">
+                备份仅支持保留一份备份，二次备份会覆盖，在测试 Mod 时请逐一测试
+            </Typography>
             <MessageBar ref={messageBarRef} />
         </div>
     );
