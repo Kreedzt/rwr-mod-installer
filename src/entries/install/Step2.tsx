@@ -90,18 +90,22 @@ const Step2: FC<Step2Props> = ({ displayModInfo, onNext, onPrev }) => {
                         <Button onClick={onShowReadme}>说明文件</Button>
                         <Button onClick={onShowChangelog}>版本更新文件</Button>
                     </Box>
-                    <Box>
-                        <Button
-                            variant="contained"
-                            color="warning"
-                            onClick={onPrev}
-                        >
-                            上一步
-                        </Button>
-                        <Button variant="contained" onClick={onNext}>
-                            下一步
-                        </Button>
-                    </Box>
+                    <div>
+                        <Box component="span" mr={2}>
+                            <Button
+                                variant="contained"
+                                color="warning"
+                                onClick={onPrev}
+                            >
+                                上一步
+                            </Button>
+                        </Box>
+                        <Box component="span">
+                            <Button variant="contained" onClick={onNext}>
+                                下一步
+                            </Button>
+                        </Box>
+                    </div>
                 </>
             ) : (
                 <Typography>

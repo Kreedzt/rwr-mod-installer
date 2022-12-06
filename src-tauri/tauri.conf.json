@@ -25,7 +25,8 @@
                     "$DATA/*",
                     "$CONFIG/*",
                     "$CACHE/*",
-                    "$LOG/*"
+                    "$LOG/*",
+                    "media/*"
                 ]
             },
             "shell": {

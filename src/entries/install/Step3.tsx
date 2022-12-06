@@ -66,7 +66,7 @@ const Step3: FC<Step3Props> = ({
             console.log('resPath', resPath);
             messageBarRef.current?.show({
                 type: 'success',
-                msg: '备份成功',
+                msg: `备份成功, 已备份到:${resPath}`,
             });
         } catch (e: any) {
             messageBarRef.current?.show({
@@ -77,12 +77,14 @@ const Step3: FC<Step3Props> = ({
         } finally {
             setLoading(false);
         }
-    }, [filePath, modInfo]);
+    }, [filePath, modInfo, appContext]);
 
     const onRecover = useCallback(async () => {
         try {
             setLoading(true);
-            await invoke('recover_backup');
+            await invoke('recover_backup', {
+                path: appContext.configStore?.target_path_folder
+            });
             messageBarRef.current?.show({
                 type: 'success',
                 msg: '还原备份成功',
@@ -96,7 +98,7 @@ const Step3: FC<Step3Props> = ({
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [appContext]);
 
     if (!filePath) {
         return <Typography>未读取到文件路径, 请返回上一步</Typography>;

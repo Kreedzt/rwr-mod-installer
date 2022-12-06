@@ -3,19 +3,20 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::api::path::{cache_dir};
+use tauri::api::path::{cache_dir, data_dir};
 use anyhow::{anyhow, Ok as AnyhowOk, Result as AnyhowResult};
 use serde::{Deserialize, Serialize};
+use std::fmt::format;
 use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::BufReader;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::{error::Error, io::prelude::*};
 use walkdir::{DirEntry, WalkDir};
 use zip::write::FileOptions;
 
-const TEMP_FOLDER: &str = "temp";
+const CACHE_FOLDER: &str = "rwr-mod-installer";
 
 // static COMPRESS_FILE: &'static str = "compressed.zip";
 const BACKUP_FILE: &str = "backup.zip";
@@ -71,6 +72,12 @@ fn get_output_file_name(folder_path: &str) -> AnyhowResult<String> {
     );
 
     Ok(output_file_name)
+}
+
+fn get_backup_path() -> AnyhowResult<PathBuf> {
+    let data_dir = data_dir().ok_or(anyhow!("Can't find data_dir"))?;
+    let path = Path::new(&data_dir).join(format!("{}/{}", CACHE_FOLDER, BACKUP_FILE));
+    return Ok(path);
 }
 
 fn write_zip(folder_path: &str, output_file_name: &str) -> AnyhowResult<()> {
@@ -310,28 +317,38 @@ fn extract_zip(path: &str, target_path: &str) -> AnyhowResult<()> {
 fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> AnyhowResult<String> {
     // Step1: extract effect file
     let app_cache_dir = cache_dir().unwrap();
-    let prefix_path = Path::new(app_cache_dir.as_path());
+    let _prefix_path = Path::new(app_cache_dir.as_path());
+    let prefix_path = _prefix_path.join(CACHE_FOLDER);
+    // fs::create_dir_all(prefix_path.clone()).map_err(|err| anyhow!("{:?}", err))?;
 
     for file in file_path_list {
         let p = Path::new(target_path);
-        let source_path = p.join(file.clone());
+        println!("in zip file path: {:?}", file);
+        let source_path = p.join(format!("./{}", file.clone()));
+        // eg: a.carry_item
+        if let Some(file_name) = source_path.file_name() {
+            println!("full_path: {:?}", source_path);
+            println!("path exists: {:?}", source_path.exists());
 
-        println!("full_path: {:?}", source_path);
-        println!("path exists: {:?}", source_path.exists());
+            if source_path.exists() {
+                // Copy file to temp Folder
+                // let target_suffix_path = format!("./{}", &file);
+                let target_path = prefix_path.join(Path::new(&file));
 
-        if source_path.exists() {
-            // Copy file to temp Folder
-            let target_path = prefix_path.join(file.clone());
-            println!("target_path: {:?}", target_path);
-            fs::create_dir_all(target_path.clone())?;
-            fs::copy(source_path, target_path)?;
+                let parent_folder_path = target_path.parent().ok_or(anyhow!("Can't find parent folder"))?;
+                fs::create_dir_all(parent_folder_path).map_err(|err| anyhow!("{:?}", err))?;
+                fs::copy(source_path, target_path).map_err(|err| anyhow!("{:?}", err))?;
+            }
         }
     }
 
 
     // Step2: write "backup.zip"
-    let output_path = "backup.zip";
-    let path = std::path::Path::new(&output_path);
+    let path = get_backup_path()?;
+    let output_path = String::from(path.to_str().unwrap());
+    println!("output_path: {}", output_path);
+
+    fs::create_dir_all(path.parent().unwrap())?;
     let file = fs::File::create(path)?;
 
     let mut zip = zip::ZipWriter::new(file);
@@ -340,7 +357,7 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
         .compression_method(zip::CompressionMethod::Stored)
         .unix_permissions(0o775);
 
-    let walkdir = WalkDir::new(prefix_path);
+    let walkdir = WalkDir::new(prefix_path.clone());
     let it = walkdir.into_iter();
 
     let it = it.filter_map(|e| e.ok());
@@ -351,17 +368,18 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
     for entry in it {
         let path = entry.path();
         let path_str = path.to_str().unwrap();
-        let clipped_path = path_str.replace(prefix_path.to_str().unwrap(), "");
+        let c_prefix_path = prefix_path.clone();
+        let clipped_path = path_str.replace(c_prefix_path.to_str().unwrap(), "");
         let name = Path::new(&clipped_path);
 
-        println!("it name {:?}", name);
+        // println!("it name {:?}", name);
         // path
         // let name = path.strip_prefix(Path::new(MOD_FOLDER)).unwrap();
 
         // Write file or directory explicitly
         // Some unzip tools unzip files with directory paths correctly, some do not!
         if path.is_file() {
-            println!("adding file {:?}", path);
+            // println!("adding file {:?}", path);
             #[allow(deprecated)]
             zip.start_file_from_path(name, options)?;
             let mut f = File::open(path)?;
@@ -372,7 +390,7 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
         } else if !name.as_os_str().is_empty() {
             // Only if not root! Avoids path spec / warning
             // and mapname conversion failed error on unzip
-            println!("adding dir {:?}", path);
+            // println!("adding dir {:?}", path);
             #[allow(deprecated)]
             zip.add_directory_from_path(name, options)?;
         }
@@ -424,9 +442,14 @@ fn make_backup(mod_path: &str, file_list: Vec<String>, target_path: &str) -> Res
 }
 
 #[tauri::command]
-fn recover_backup() -> Result<String, String> {
-    let res = String::new();
-    Ok(res)
+fn recover_backup(path: &str) -> Result<(), String> {
+    let backup_path = get_backup_path().unwrap();
+    let backup_path = String::from(backup_path.to_str().unwrap());
+    let res = extract_zip(&backup_path, path);
+    match res {
+        Ok(s) => Ok(()),
+        Err(e) => Err(e.to_string()),
+    }
 }
 
 #[tauri::command]
