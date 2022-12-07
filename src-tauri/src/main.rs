@@ -285,6 +285,32 @@ fn extract_zip(path: &str, target_path: &str) -> AnyhowResult<()> {
             println!("File {} extracted to \"{}\"", i, outpath.display());
             fs::create_dir_all(&outpath).unwrap();
         } else {
+            let full_file_path_str = file.name();
+            let full_file_path = Path::new(full_file_path_str);
+            if let Some(file_name) = full_file_path.file_name() {
+                match file_name.to_str().unwrap() {
+                    README_FILE => {
+                        //
+                        continue;
+                    }
+                    CONFIG_FILE => {
+                        //
+                        continue;
+                    }
+                    CHANGELOG_FILE => {
+                        //
+                        continue;
+                    }
+                    CONFIG_FILE => {
+                        //
+                        continue;
+                    }
+                    _ => {
+                        println!("Extract: {:?}", file_name);
+                    }
+                }
+            }
+            println!("File name: {}", file.name());
             println!(
                 "File {} extracted to \"{}\" ({} bytes)",
                 i,
@@ -319,6 +345,13 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
     let app_cache_dir = cache_dir().unwrap();
     let _prefix_path = Path::new(app_cache_dir.as_path());
     let prefix_path = _prefix_path.join(CACHE_FOLDER);
+
+    let precheck_path = prefix_path.join(MOD_FOLDER);
+
+    // Remove old backup
+    if precheck_path.exists() {
+        fs::remove_dir_all(precheck_path)?;
+    }
     // fs::create_dir_all(prefix_path.clone()).map_err(|err| anyhow!("{:?}", err))?;
 
     for file in file_path_list {
