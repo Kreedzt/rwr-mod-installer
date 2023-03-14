@@ -11,6 +11,7 @@ import Divider from '@mui/material/Divider';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
+import Grid from '@mui/material/Grid';
 import './Bundle.less';
 
 interface BundleProps {
@@ -30,7 +31,7 @@ const Bundle: FC<BundleProps> = () => {
 
     const msgBarRef = useMessageBarRef();
 
-    const selectFolder = useCallback(async () => {
+    const onBundle = useCallback(async () => {
         try {
             setLoading(true);
             const selectedPath = await open({
@@ -48,7 +49,7 @@ const Bundle: FC<BundleProps> = () => {
             const total_path = `${selectedPath}\\${res}`;
             msgBarRef.current?.show({
                 type: 'success',
-                msg: `已打包，输出路径为:${total_path}`,
+                msg: `已打包，输出路径为:【${total_path}】`,
             });
         } catch (e: any) {
             console.log(e);
@@ -59,7 +60,37 @@ const Bundle: FC<BundleProps> = () => {
         } finally {
             setLoading(false);
         }
-    }, [setLoading]);
+    }, []);
+
+    const onGenerateConfig = useCallback(async () => {
+        try {
+            setLoading(true);
+            const selectedPath = await open({
+                directory: true,
+            });
+
+            console.log('selectedPath', selectedPath);
+            // Remote Call Rust Fn
+            const res = await invoke('generate_mod_config', {
+                path: selectedPath,
+            });
+
+            console.log('res', res);
+
+            msgBarRef.current?.show({
+                type: 'success',
+                msg: `已为【${res}】目录生成默认配置`,
+            });
+        } catch (e: any) {
+            console.log(e);
+            msgBarRef.current?.show({
+                type: 'error',
+                msg: typeof e === 'string' ? e : e.message,
+            });
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     return (
         <Box className="bundle-container">
@@ -72,9 +103,22 @@ const Bundle: FC<BundleProps> = () => {
             <Divider />
 
             <Box mt={2} mb={2}>
-                <Button variant="contained" onClick={selectFolder}>
-                    点我选择文件夹打包
-                </Button>
+                <Grid container spacing={2}>
+                    <Grid item>
+                        <Button variant="contained" onClick={onBundle}>
+                            打包
+                        </Button>
+                    </Grid>
+                    <Grid item>
+                        <Button
+                            color="warning"
+                            variant="contained"
+                            onClick={onGenerateConfig}
+                        >
+                            生成默认配置文件
+                        </Button>
+                    </Grid>
+                </Grid>
             </Box>
 
             <Box mt={2} mb={2} mr={2}>

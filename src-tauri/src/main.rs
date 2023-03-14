@@ -16,21 +16,10 @@ use std::{error::Error, io::prelude::*};
 use walkdir::{DirEntry, WalkDir};
 use zip::write::FileOptions;
 
-const CACHE_FOLDER: &str = "rwr-mod-installer";
-
-// static COMPRESS_FILE: &'static str = "compressed.zip";
-const BACKUP_FILE: &str = "backup.zip";
-
-// static CONFIG_FILE: &'static str = "config.json";
-const CONFIG_FILE: &str = "config.json";
-
-// static README_FILE: &'static str = "README.md";
-const README_FILE: &str = "README.md";
-
-// static CHANGELOG_FILE: &'static str = "CHANGELOG.md";
-const CHANGELOG_FILE: &str = "CHANGELOG.md";
-
-static MOD_FOLDER: &'static str = "media";
+mod constants;
+mod templates;
+use constants::*;
+use templates::*;
 
 // read config
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -435,6 +424,18 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
     AnyhowOk(output_path.to_string())
 }
 
+fn generate_default_file(path: &str, content: &str) -> AnyhowResult<String> {
+    let target_path = Path::new(path);
+
+    if target_path.exists() {
+        return AnyhowOk(String::from("已存在文件, 无需创建"));
+    }
+
+    fs::write(target_path, content)?;
+
+    AnyhowOk(String::from("已创建文件"))
+}
+
 #[tauri::command]
 fn bundle_mod(path: &str) -> Result<String, String> {
     let output_file_name = get_output_file_name(path);
@@ -449,6 +450,28 @@ fn bundle_mod(path: &str) -> Result<String, String> {
         Ok(_) => Ok(output_file_name),
         Err(e) => Err(e.to_string()),
     }
+}
+
+#[tauri::command]
+fn generate_mod_config(path: &str) -> Result<String, String> {
+    let res_str = String::from(path);
+
+    let target_file = format!("{}/{}", path, CONFIG_FILE);
+    if let Err(e) = generate_default_file(&target_file, TEMPLATE_CONFIG_JSON) {
+        return Err(e.to_string());
+    }
+
+    let target_file = format!("{}/{}", path, README_FILE);
+    if let Err(e) = generate_default_file(&target_file, TEMPLATE_README_MD) {
+        return Err(e.to_string());
+    }
+
+    let target_file = format!("{}/{}", path, CHANGELOG_FILE);
+    if let Err(e) = generate_default_file(&target_file, TEMPLATE_CHANGELOG_MD) {
+        return Err(e.to_string());
+    }
+
+    Ok(res_str)
 }
 
 // return OutputStuct to_string str
@@ -498,6 +521,7 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             bundle_mod,
+            generate_mod_config,
             read_info,
             install_mod,
             make_backup,
