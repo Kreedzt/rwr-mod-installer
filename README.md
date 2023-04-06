@@ -17,6 +17,8 @@
 -   [x] Mod 打包
 -   [x] Mod 安装
 
+针对 `Windows 7` 用户, 请去 [官网](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section) 下载 `webview2` 运行时
+
 ## 开发
 
 该项目是基于 [tauri](https://tauri.app/) 进行创建的项目, 同时依赖以下 2 个语言环境:
