@@ -96,7 +96,7 @@ const Bundle: FC<BundleProps> = () => {
         <Box className="bundle-container">
             <Box p={2}>
                 <Typography variant="h5">
-                    将 Mod 包打包成可供安装的 zip 文件
+                    将 Mod 包打包成可供安装的 7z 文件
                 </Typography>
             </Box>
 

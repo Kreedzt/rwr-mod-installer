@@ -63,12 +63,12 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
                 <ol>
                     <li>
                         本安装器只识别使用本安装器 "打包" 的 Mod,
-                        请不要使用第三方软件擅自压缩 zip 进行安装
+                        请不要使用第三方软件擅自压缩 zip/7z 进行安装
                     </li>
                     <li>
                         使用本安装器打包的 Mod 文件名通常为此格式:
                         <Typography variant="subtitle1">
-                            [RWRMI][1.95]*** v0.1.0.zip
+                            [RWRMI][1.95]*** v0.1.0.zip/7z
                         </Typography>
                     </li>
                     <li>

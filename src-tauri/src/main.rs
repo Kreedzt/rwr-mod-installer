@@ -57,7 +57,7 @@ fn get_output_file_name(folder_path: &str) -> AnyhowResult<String> {
         .map_err(|e| anyhow!("Get mod config file error: {}", e))?;
 
     let output_file_name = format!(
-        "[RWRMI][{}]{} v{}.zip",
+        "[RWRMI][{}]{} v{}.7z",
         config.game_version, config.title, config.version
     );
 
@@ -152,6 +152,66 @@ fn write_zip(folder_path: &str, output_file_name: &str) -> AnyhowResult<()> {
 
 // TODO
 fn write_7z(folder_path: &str, output_file_name: &str) -> AnyhowResult<()> {
+    let decompress_temp_path = get_cache_read_7z_path()?;
+
+    println!(
+        "decompress_temp_path: {}",
+        decompress_temp_path.clone().to_str().unwrap()
+    );
+
+    if decompress_temp_path.exists() {
+        fs::remove_dir_all(&decompress_temp_path).map_err(|err| anyhow!("{:?}", err))?;
+    } else {
+        fs::create_dir_all(&decompress_temp_path).map_err(|err| anyhow!("{:?}", err))?;
+    }
+    println!("init decompress_temp_path success");
+
+    let decompress_temp_path = decompress_temp_path.to_str().unwrap();
+
+    // copy to temp
+    fs::copy(
+        format!("{}/{}", folder_path, CONFIG_FILE),
+        format!("{}/{}", &decompress_temp_path, CONFIG_FILE),
+    )
+    .map_err(|err| anyhow!("{:?}", err))?;
+    fs::copy(
+        format!("{}/{}", folder_path, README_FILE),
+        format!("{}/{}", &decompress_temp_path, README_FILE),
+    )
+    .map_err(|err| anyhow!("{:?}", err))?;
+    fs::copy(
+        format!("{}/{}", folder_path, CHANGELOG_FILE),
+        format!("{}/{}", &decompress_temp_path, CHANGELOG_FILE),
+    )
+    .map_err(|err| anyhow!("{:?}", err))?;
+
+    for entry in WalkDir::new(format!("{}/{}", folder_path, MOD_FOLDER)) {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        println!("current loop: {:?}", path.clone().display());
+
+        if path.is_dir() {
+            let relative_path = path
+                .display()
+                .to_string()
+                .replace(folder_path, &decompress_temp_path);
+            fs::create_dir(relative_path).map_err(|err| anyhow!("{:?}", err))?;
+        } else if path.is_file() {
+            let relative_path = path
+                .display()
+                .to_string()
+                .replace(folder_path, &decompress_temp_path);
+            fs::copy(path, relative_path).map_err(|err| anyhow!("{:?}", err))?;
+        }
+    }
+
+    // bundle
+    compress_to_path(
+        &decompress_temp_path,
+        format!("{}/{}", folder_path, output_file_name),
+    )
+    .map_err(|err| anyhow!("{:?}", err))?;
+
     Ok(())
 }
 
@@ -265,7 +325,10 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
 fn read_7z(path: &str) -> AnyhowResult<String> {
     let decompress_temp_path = get_cache_read_7z_path()?;
 
-    println!("decompress_temp_path: {}", decompress_temp_path.clone().to_str().unwrap());
+    println!(
+        "decompress_temp_path: {}",
+        decompress_temp_path.clone().to_str().unwrap()
+    );
     if decompress_temp_path.exists() {
         fs::remove_dir_all(&decompress_temp_path).map_err(|err| anyhow!("{:?}", err))?;
     } else {
@@ -284,22 +347,27 @@ fn read_7z(path: &str) -> AnyhowResult<String> {
     let mut file_path_list: Vec<String> = Vec::new();
 
     let config_file_path = format!("{}/{}", decompress_temp_path, CONFIG_FILE);
-    let config_file_content = fs::read_to_string(config_file_path).map_err(|err| anyhow!("{:?}", err))?;
+    let config_file_content =
+        fs::read_to_string(config_file_path).map_err(|err| anyhow!("{:?}", err))?;
     let installer_config = serde_json::from_str::<ModInstallerConfig>(&config_file_content)?;
 
     let readme_file_path = format!("{}/{}", decompress_temp_path, CONFIG_FILE);
-    let readme_content = fs::read_to_string(readme_file_path).map_err(|err| anyhow!("{:?}", err))?;
+    let readme_content =
+        fs::read_to_string(readme_file_path).map_err(|err| anyhow!("{:?}", err))?;
 
     let changelog_file_path = format!("{}/{}", decompress_temp_path, CONFIG_FILE);
-    let changelog_content = fs::read_to_string(changelog_file_path).map_err(|err| anyhow!("{:?}", err))?;
+    let changelog_content =
+        fs::read_to_string(changelog_file_path).map_err(|err| anyhow!("{:?}", err))?;
 
-    let media_folder_path = format!("{}/{}", decompress_temp_path, "media");
+    let media_folder_path = format!("{}/{}", decompress_temp_path, MOD_FOLDER);
 
     for entry in WalkDir::new(&media_folder_path) {
         let entry = entry.unwrap();
         let full_path = entry.path().display().to_string();
 
-        let relative_path = full_path.to_string().replace(&media_folder_path, "media/");
+        let relative_path = full_path
+            .to_string()
+            .replace(&media_folder_path, MOD_FOLDER);
 
         let file = File::open(full_path).map_err(|err| anyhow!("{:?}", err))?;
 
@@ -317,7 +385,7 @@ fn read_7z(path: &str) -> AnyhowResult<String> {
         file_log_info,
         file_path_list,
         readme_content,
-        changelog_content
+        changelog_content,
     };
 
     let output_string = serde_json::to_string(&output_struct)?;
