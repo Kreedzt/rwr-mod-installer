@@ -1,4 +1,5 @@
 pub const CACHE_FOLDER: &str = "rwr-mod-installer";
+pub const CACHE_7Z_FOLDER: &str = "cache-7z";
 
 // static COMPRESS_FILE: &'static str = "compressed.zip";
 pub const BACKUP_FILE: &str = "backup.zip";

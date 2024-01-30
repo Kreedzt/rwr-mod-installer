@@ -3,9 +3,9 @@
     windows_subsystem = "windows"
 )]
 
-use tauri::api::path::{cache_dir, data_dir};
 use anyhow::{anyhow, Ok as AnyhowOk, Result as AnyhowResult};
 use serde::{Deserialize, Serialize};
+use sevenz_rust::{compress_to_path, decompress_file};
 use std::fmt::format;
 use std::fs;
 use std::fs::File;
@@ -13,6 +13,7 @@ use std::io;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
 use std::{error::Error, io::prelude::*};
+use tauri::api::path::{cache_dir, data_dir};
 use walkdir::{DirEntry, WalkDir};
 use zip::write::FileOptions;
 
@@ -66,7 +67,13 @@ fn get_output_file_name(folder_path: &str) -> AnyhowResult<String> {
 fn get_backup_path() -> AnyhowResult<PathBuf> {
     let data_dir = data_dir().ok_or(anyhow!("Can't find data_dir"))?;
     let path = Path::new(&data_dir).join(format!("{}/{}", CACHE_FOLDER, BACKUP_FILE));
-    return Ok(path);
+    Ok(path)
+}
+
+fn get_cache_read_7z_path() -> AnyhowResult<PathBuf> {
+    let data_dir = cache_dir().ok_or(anyhow!("Can't find cache_dir"))?;
+    let path = Path::new(&data_dir).join(format!("{}/{}", CACHE_FOLDER, CACHE_7Z_FOLDER));
+    Ok(path)
 }
 
 fn write_zip(folder_path: &str, output_file_name: &str) -> AnyhowResult<()> {
@@ -143,6 +150,12 @@ fn write_zip(folder_path: &str, output_file_name: &str) -> AnyhowResult<()> {
     Ok(())
 }
 
+// TODO
+fn write_7z(folder_path: &str, output_file_name: &str) -> AnyhowResult<()> {
+    Ok(())
+}
+
+// read mod info
 fn read_zip(path: &str) -> AnyhowResult<String> {
     let file = File::open(path)?;
     let reader = BufReader::new(file);
@@ -241,6 +254,70 @@ fn read_zip(path: &str) -> AnyhowResult<String> {
         file_path_list,
         readme_content,
         changelog_content,
+    };
+
+    let output_string = serde_json::to_string(&output_struct)?;
+
+    Ok(output_string)
+}
+
+// read mod info
+fn read_7z(path: &str) -> AnyhowResult<String> {
+    let decompress_temp_path = get_cache_read_7z_path()?;
+
+    println!("decompress_temp_path: {}", decompress_temp_path.clone().to_str().unwrap());
+    if decompress_temp_path.exists() {
+        fs::remove_dir_all(&decompress_temp_path).map_err(|err| anyhow!("{:?}", err))?;
+    } else {
+        fs::create_dir_all(&decompress_temp_path).map_err(|err| anyhow!("{:?}", err))?;
+    }
+
+    // decompress to $TEMP/cache-7z/
+    decompress_file(path, &decompress_temp_path).map_err(|err| anyhow!("{:?}", err))?;
+    println!("decompress completed");
+
+    let decompress_temp_path = decompress_temp_path.to_str().unwrap();
+
+    // file size ...
+    let mut file_log_info: Vec<String> = Vec::new();
+    // file path ...
+    let mut file_path_list: Vec<String> = Vec::new();
+
+    let config_file_path = format!("{}/{}", decompress_temp_path, CONFIG_FILE);
+    let config_file_content = fs::read_to_string(config_file_path).map_err(|err| anyhow!("{:?}", err))?;
+    let installer_config = serde_json::from_str::<ModInstallerConfig>(&config_file_content)?;
+
+    let readme_file_path = format!("{}/{}", decompress_temp_path, CONFIG_FILE);
+    let readme_content = fs::read_to_string(readme_file_path).map_err(|err| anyhow!("{:?}", err))?;
+
+    let changelog_file_path = format!("{}/{}", decompress_temp_path, CONFIG_FILE);
+    let changelog_content = fs::read_to_string(changelog_file_path).map_err(|err| anyhow!("{:?}", err))?;
+
+    let media_folder_path = format!("{}/{}", decompress_temp_path, "media");
+
+    for entry in WalkDir::new(&media_folder_path) {
+        let entry = entry.unwrap();
+        let full_path = entry.path().display().to_string();
+
+        let relative_path = full_path.to_string().replace(&media_folder_path, "media/");
+
+        let file = File::open(full_path).map_err(|err| anyhow!("{:?}", err))?;
+
+        let file_len = file.metadata().map_err(|err| anyhow!("{:?}", err))?.len();
+        file_path_list.push(relative_path.clone());
+        file_log_info.push(format!("{}({} bytes)", relative_path, file_len));
+    }
+
+    let output_struct = OutputConfig {
+        title: installer_config.title,
+        description: installer_config.description,
+        authors: installer_config.authors,
+        version: installer_config.version,
+        game_version: installer_config.game_version,
+        file_log_info,
+        file_path_list,
+        readme_content,
+        changelog_content
     };
 
     let output_string = serde_json::to_string(&output_struct)?;
@@ -357,13 +434,14 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
                 // let target_suffix_path = format!("./{}", &file);
                 let target_path = prefix_path.join(Path::new(&file));
 
-                let parent_folder_path = target_path.parent().ok_or(anyhow!("Can't find parent folder"))?;
+                let parent_folder_path = target_path
+                    .parent()
+                    .ok_or(anyhow!("Can't find parent folder"))?;
                 fs::create_dir_all(parent_folder_path).map_err(|err| anyhow!("{:?}", err))?;
                 fs::copy(source_path, target_path).map_err(|err| anyhow!("{:?}", err))?;
             }
         }
     }
-
 
     // Step2: write "backup.zip"
     let path = get_backup_path()?;
@@ -420,8 +498,16 @@ fn backup(mod_path: &str, file_path_list: Vec<String>, target_path: &str) -> Any
 
     zip.finish()?;
 
-
     AnyhowOk(output_path.to_string())
+}
+
+// TODO
+fn backup_7z(
+    mod_path: &str,
+    file_path_list: Vec<String>,
+    target_path: &str,
+) -> AnyhowResult<String> {
+    Ok(String::from(""))
 }
 
 fn generate_default_file(path: &str, content: &str) -> AnyhowResult<String> {
@@ -445,7 +531,8 @@ fn bundle_mod(path: &str) -> Result<String, String> {
 
     let output_file_name = output_file_name.unwrap();
 
-    let res = write_zip(path, &output_file_name);
+    // let res = write_zip(path, &output_file_name);
+    let res = write_7z(path, &output_file_name);
     match res {
         Ok(_) => Ok(output_file_name),
         Err(e) => Err(e.to_string()),
@@ -477,15 +564,27 @@ fn generate_mod_config(path: &str) -> Result<String, String> {
 // return OutputStuct to_string str
 #[tauri::command]
 fn read_info(path: &str) -> Result<String, String> {
-    let res = read_zip(path);
-    match res {
-        Ok(s) => Ok(s),
-        Err(e) => Err(e.to_string()),
+    if path.ends_with(".zip") {
+        match read_zip(path) {
+            Ok(s) => Ok(s),
+            Err(e) => Err(e.to_string()),
+        }
+    } else if path.ends_with(".7z") {
+        match read_7z(path) {
+            Ok(s) => Ok(s),
+            Err(e) => Err(e.to_string()),
+        }
+    } else {
+        Err(String::from("Not correct file!"))
     }
 }
 
 #[tauri::command]
-fn make_backup(mod_path: &str, file_list: Vec<String>, target_path: &str) -> Result<String, String> {
+fn make_backup(
+    mod_path: &str,
+    file_list: Vec<String>,
+    target_path: &str,
+) -> Result<String, String> {
     println!("mod_path: {}", mod_path);
     println!("target_path: {}", target_path);
 

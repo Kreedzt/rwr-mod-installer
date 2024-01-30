@@ -2,9 +2,11 @@ import React, { FC, useCallback, useState } from 'react';
 import { open } from '@tauri-apps/api/dialog';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { invoke } from '@tauri-apps/api';
-import { ModReadInfo } from './types';
 import Box from '@mui/material/Box/Box';
+import { invoke } from '@tauri-apps/api';
+import MessageBar from '../../components/messageBar/MessageBar';
+import { useMessageBarRef } from '../../components/messageBar/hooks';
+import { ModReadInfo } from './types';
 
 type Step1Props = {
     setLoading: (next: boolean) => void;
@@ -12,6 +14,8 @@ type Step1Props = {
 };
 
 const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
+    const msgBarRef = useMessageBarRef();
+
     const selectFile = useCallback(async () => {
         try {
             setLoading(true);
@@ -20,6 +24,10 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
                     {
                         name: 'zip',
                         extensions: ['zip'],
+                    },
+                    {
+                        name: '7z',
+                        extensions: ['7z'],
                     },
                 ],
             });
@@ -36,7 +44,11 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
 
             onNext(selectedPath as string, modInfo);
         } catch (e) {
-            console.log(e);
+            console.log('on select file error', e);
+            msgBarRef.current?.show({
+                type: 'error',
+                msg: typeof e === 'string' ? e : e.message,
+            });
         } finally {
             setLoading(false);
         }
@@ -68,6 +80,7 @@ const Step1: FC<Step1Props> = ({ setLoading, onNext }) => {
             <Button variant="contained" onClick={selectFile}>
                 选择打包后的文件
             </Button>
+            <MessageBar ref={msgBarRef} />
         </div>
     );
 };
